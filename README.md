@@ -1,48 +1,133 @@
 # APIDocMedic
 
-> Portable agent for detecting recognizable API routes that lack OpenAPI or Swagger documentation.
+> A portable engineering agent for **API documentation**.
 
-## What it does
+APIDocMedic inspects observable project evidence, detects **routes without OpenAPI/Swagger artifacts**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-APIDocMedic scans source files for common Express-style HTTP route definitions and checks whether recognizable OpenAPI or Swagger documentation is present.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Route discovery → documentation gap → evidence → API documentation plan**
-
-## Why this agent is distinct
-
-APIDocMedic connects implementation evidence to developer-facing API documentation. It is not an API correctness checker and does not claim that undocumented routes are broken. Its job is to surface a documentation gap that can be acted on.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-API source
-   ↓
-Route detector
-   ↓
-OpenAPI / Swagger presence check
-   ↓
-Evidence-backed finding
-   ↓
-Documentation recommendation
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | APIDocMedic behavior |
+| --- | --- |
+| Domain | API documentation |
+| Primary signal | Express/FastAPI-style routes and API docs |
+| Remediation | Add OpenAPI or Swagger documentation |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
-Includes:
+The repository includes:
+
+- Local adapter verification
+- A domain-specific broken-project fixture
 - OpenGAP-compatible passport metadata
-- API-documentation fixture
-- behavior and explainability contracts
-- OpenAI / CrewAI / Claude Code / Lyzr adapters
-- automated adapter verification
+- Explainability requirements
+- Export verification across the supported targets
 
-OpenGAP validation passed and all four generated framework exports have been exercised successfully.
+The engineering workflow is:
 
-## Design principle
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-**Implementation and documentation should agree.** APIDocMedic looks for evidence that the API surface has a corresponding documentation surface.
+## Scope and limitations
 
-## Medic family
+APIDocMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
 
-APIDocMedic is the API-documentation specialist in the larger portable Medic family.
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
