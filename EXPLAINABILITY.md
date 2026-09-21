@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: APIDocMedic
 
-APIDocMedic makes an assessment by analyzing evidence related to API documentation. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+APIDocMedic decides whether recognizable web API routes exist without a visible OpenAPI or Swagger artifact. A match becomes a documentation-readiness finding backed by the observed route and documentation signals.
 
-APIDocMedic uses source files, configuration, project structure, and relevant API documentation data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It uses readable source text to detect common Express- or FastAPI-style HTTP route patterns and checks the file list for openapi or swagger artifacts. The decision is deterministic and evidence-based.
 
-APIDocMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not prove that every endpoint is undocumented or that an existing API specification is complete. Dynamically generated routes and documentation hosted outside the repository may be missed.
